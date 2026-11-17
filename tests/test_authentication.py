@@ -5,37 +5,23 @@ from crypto.authentication import (
     verify_public_key
 )
 
-# Alice generates RSA keys
-alice_private, alice_public = generate_signing_keys()
 
-# Alice signs her DH public key
-alice_dh_public_key = 15
+def test_valid_signature():
+    private_key, public_key = generate_signing_keys()
 
-signature = sign_public_key(
-    alice_private,
-    alice_dh_public_key
-)
+    dh_public_key = 15
+    signature = sign_public_key(private_key, dh_public_key)
 
-# Bob verifies Alice's signature
-valid = verify_public_key(
-    alice_public,
-    alice_dh_public_key,
-    signature
-)
+    assert verify_public_key(
+        public_key, dh_public_key, signature
+    ) is True
 
-print("===== AUTHENTICATION TEST =====")
-print("Original public key:", alice_dh_public_key)
-print("Signature valid:", valid)
 
-# Eve modifies Alice's public key
-modified_key = 20
+def test_modified_public_key_rejected():
+    private_key, public_key = generate_signing_keys()
 
-tampered = verify_public_key(
-    alice_public,
-    modified_key,
-    signature
-)
+    signature = sign_public_key(private_key, 15)
 
-print("\n===== TAMPERING TEST =====")
-print("Modified public key:", modified_key)
-print("Signature valid:", tampered)
+    assert verify_public_key(
+        public_key, 20, signature
+    ) is False

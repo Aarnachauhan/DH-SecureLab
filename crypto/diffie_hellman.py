@@ -8,11 +8,13 @@ class DiffieHellman:
         self.p = p
         self.g = g
 
-        self.private_key = secrets.randbelow(p - 3) + 2
+        # Generate a valid public key
+        while True:
+            self.private_key = secrets.randbelow(p - 3) + 2
+            self.public_key = pow(self.g, self.private_key, self.p)
 
-        self.public_key = pow(
-            self.g, self.private_key, self.p
-        )
+            if 2 <= self.public_key <= self.p - 2:
+                break
 
     def generate_shared_secret(self, peer_public_key):
 
